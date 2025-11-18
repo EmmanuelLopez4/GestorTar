@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Información y Políticas de AppTareas</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    
+    <style>
+        /* Estilo simple para la lista de enlaces */
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 0;
+            list-style: none;
+        }
+        .link-list a {
+            background: var(--bg-primary);
+            color: var(--color-accent);
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            display: block;
+        }
+        .link-list a:hover {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    
+    <header class="site-nav">
+        <div style="font-size: 1.2em; font-weight: bold;">AppTareas | Información</div>
+        <nav class="nav-links">
+            <a href="../index.html">← Volver al Inicio</a> 
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <h1>ℹ️ Sobre AppTareas y Documentación</h1>
+        <p class="optional">Aquí encontrarás información sobre el cumplimiento, políticas internas y seguridad de la aplicación.</p>
+
+        <div class="card">
+            <h2>Documentos de Referencia</h2>
+            
+            <ul class="link-list">
+                <li><a href="iso27000.html">ISO 27000 (Seguridad de la Información)</a></li>
+                <li><a href="privacidad.html">Política de Privacidad</a></li>
+                <li><a href="auditoria.html">Panel Detallado de Auditoría</a></li>
+                <li><a href="seguridad_politica.html">Política General de Seguridad</a></li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    <footer>
+        &copy; 2025 AppTareas. Todos los derechos reservados.
+    </footer>
+
+</body>
+</html>

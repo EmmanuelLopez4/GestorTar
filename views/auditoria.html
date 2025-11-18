@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Auditoría — AppTareas</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    
+    <header class="site-nav">
+        <div style="font-size: 1.2em; font-weight: bold;">Registro de Auditoría</div>
+        <nav class="nav-links">
+            <a href="../index.html">Inicio</a>
+            <a href="info.html">Documentos</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Eventos registrados</h2>
+            <p class="optional">Este registro almacena eventos relevantes (creación de tareas, marcados como completadas, etc.). Los registros se guardan en el almacenamiento local del navegador para esta demo.</p>
+            <div id="auditList" style="max-height:520px;overflow:auto;padding:12px;border-radius:8px;background:#f8fafc; border: 1px solid #e2e8f0;"></div>
+            <p style="margin-top:12px;color:#666;font-size:13px">Nota: para entornos productivos la auditoría debe estar en un repositorio inmutable (servidor/SIEM) con control de acceso.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Gestor de Tareas</p>
+    </footer>
+
+    <script src="../security.js"></script>
+    <script>
+        (function(){
+            function render(){
+                const list = window.security_getAudit ? window.security_getAudit() : [];
+                const container = document.getElementById('auditList');
+                container.innerHTML = '';
+                if (!list || list.length === 0) {
+                    container.innerHTML = '<p style="color:var(--color-text-secondary); padding: 10px;">No hay eventos registrados.</p>';
+                    return;
+                }
+                list.slice().reverse().forEach(ev => {
+                    const box = document.createElement('div');
+                    box.style.padding = '10px';
+                    box.style.marginBottom = '8px';
+                    box.style.borderRadius = '8px';
+                    box.style.background = 'white'; /* Fondo blanco dentro del contenedor gris */
+                    box.style.border = '1px solid #eee';
+                    
+                    // Mejor legibilidad del log
+                    box.innerHTML = `<div style="font-weight:700; color: var(--color-accent);">${escapeHTML(ev.action)} <span style="font-weight:400;color:#666;font-size:13px"> · ${escapeHTML(ev.timestamp)}</span></div>
+                                   <div style="font-size:13px;color:#333;margin-top:6px; font-family: monospace;">${escapeHTML(JSON.stringify(ev.details || {}))}</div>
+                                   <div style="font-size:12px;color:#999;margin-top:4px;">Meta: ${escapeHTML(JSON.stringify(ev.meta || {}))}</div>`;
+                    container.appendChild(box);
+                });
+            }
+
+            function escapeHTML(s){ return window.security_escapeHTML ? window.security_escapeHTML(s) : (''+s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+            render();
+        })();
+    </script>
+</body>
+</html>

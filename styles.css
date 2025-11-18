@@ -1,0 +1,274 @@
+:root {
+  /* Paleta de colores basada en tu referencia */
+  --bg-primary: #f9f9f9;           /* Fondo general */
+  --bg-secondary: white;           /* Fondo de tarjetas */
+  --color-accent: #2b6cb0;         /* Azul primario (Header, Botones) */
+  --color-accent-dark: #1a4d80;    /* Hover del botón */
+  --color-highlight: #ffdd57;      /* Amarillo brillante (Links en Header) */
+  --color-text-primary: #333;      /* Texto oscuro principal */
+  --color-text-secondary: #777;    /* Texto secundario/opcional */
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: var(--bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 32px auto;
+  padding: 0 20px;
+}
+
+/* --- ESTILO DE BARRA DE NAVEGACIÓN --- */
+.site-nav {
+  background: var(--color-accent);
+  color: #ffffff;
+  padding: 16px 30px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-nav div {
+    font-size: 1.4em;
+    font-weight: 700;
+}
+
+.site-nav a {
+  color: var(--color-highlight); /* Amarillo brillante */
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s, text-decoration 0.3s;
+}
+
+.site-nav a:hover {
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+/* --- TIPOGRAFÍA Y ESTRUCTURA GENERAL --- */
+h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+h2 {
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.card {
+  background: var(--bg-secondary);
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+  border: none;
+}
+
+.optional {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+/* --- ESTRUCTURA DE COLUMNAS PARA TAREAS --- */
+.task-app {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+/* --- FORMULARIOS Y BOTONES --- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+    font-weight: 500;
+    font-size: 0.9em;
+    margin-top: 5px;
+    color: var(--color-text-primary);
+}
+
+input,
+select,
+textarea {
+  padding: 10px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  transition: border-color 0.3s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+  background: var(--color-accent);
+  color: white;
+  padding: 12px 15px;
+  border-radius: 5px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  margin-top: 8px;
+}
+
+button:hover {
+  background: var(--color-accent-dark);
+}
+
+/* --- FOOTER --- */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #eee;
+  color: var(--color-text-secondary);
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+}
+
+/* --- ESTILOS ESPECÍFICOS PARA LECTURA DE DOCUMENTOS (VIEWS) --- */
+.document-content h2 {
+  font-size: 1.8em;
+  font-weight: 600;
+  margin-top: 35px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e6f0;
+}
+
+.document-content h3 {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin-top: 25px;
+  color: var(--color-accent-dark);
+}
+
+.document-content p {
+  line-height: 1.7; 
+  margin-bottom: 18px;
+}
+
+.document-content ul,
+.document-content ol {
+  padding-left: 30px;
+  margin-bottom: 25px;
+}
+
+.document-content li {
+    margin-bottom: 8px;
+}
+/* --- ESTILO ESPECÍFICO PARA EL BOTÓN DE CERRAR SESIÓN --- */
+
+/* Estilo por defecto */
+#btn-logout {
+    /* Mantiene el color Amarillo brillante de los otros enlaces de navegación */
+    color: var(--color-highlight); 
+    /* Le da un fondo transparente para que se vea como los otros enlaces */
+    background-color: transparent; 
+    /* Asegura que no se vea como un botón grueso si lo habías puesto como tal */
+}
+
+/* Estilo al pasar el ratón (Hover) */
+#btn-logout:hover {
+    /* Le da un ligero fondo para destacar la acción */
+    background-color: rgba(255, 255, 255, 0.1); 
+    /* Se mantiene el subrayado que tienes definido */
+    text-decoration: underline; 
+}
+
+/* Estilos de las tarjetas de fase en ISO 27000 (colores de ejemplo) */
+.phase.green { background: #417d40; }
+.phase.orange { background: #d46a1c; }
+.phase.gray { background: #777; }
+.phase.yellow { background: #f4b400; }
+.phase.blue { background: #4285f4; }
+
+/* ESTILOS PARA TAREAS COMPLETADAS */
+.phase.done {
+    opacity: 0.6;
+    border: 3px solid var(--color-text-secondary); 
+    box-shadow: none;
+    transition: opacity 0.3s, border 0.3s;
+}
+
+.phase.done h3,
+.phase.done p {
+    text-decoration: line-through; 
+}
+
+/* --- SOLUCIÓN DE TAMAÑO DE IMAGEN ISO --- */
+.iso-image {
+    max-width: 250px; /* ⬅️ AJUSTADO A UN ANCHO MÁXIMO MUCHO MENOR */
+    width: 100%;     
+    height: auto;
+    display: block;  
+    margin: 20px auto 0; 
+    border: 1px solid #ddd; 
+    border-radius: 8px;
+}
+
+/* --- RESPONSIVE / MÓVIL --- */
+@media (max-width: 768px) {
+  .site-nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    gap: 0;
+  }
+  .site-nav a {
+      padding: 8px 0;
+      width: 100%;
+  }
+
+  .task-app {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+      margin: 20px auto;
+  }
+}

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Listado de Tareas - AppTareas</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    
+    <style>
+        /* Estilos existentes (mantener) */
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-sm);
+        }
+        .task-item.iso { border-left: 5px solid var(--color-accent); }
+        .task-item.general { border-left: 5px solid var(--color-accent-dark); }
+        .task-item.done {
+            opacity: 0.6;
+            border-left: 5px solid var(--color-text-secondary); 
+            text-decoration: line-through;
+        }
+        .task-details { flex-grow: 1; }
+        .task-details h3 { margin: 0; font-size: 1.1em; color: var(--color-text-primary); }
+        .task-details p { margin: 4px 0 0; font-size: 0.9em; color: var(--color-text-secondary); }
+        .task-status {
+            font-weight: 700; padding: 5px 10px; border-radius: 5px; font-size: 0.8em;
+            color: white; white-space: nowrap; margin-left: 20px;
+        }
+        .status-pending { background: #d46a1c; }
+        .status-done { background: var(--color-text-secondary); }
+        .task-source { font-size: 0.75em; font-style: italic; color: var(--color-accent); margin-top: 5px; }
+
+        /* 🎨 ESTILOS PARA EL BOTÓN DE ELIMINACIÓN/COMPLETADO (VERDE) 🎨 */
+        /* Nota: Aunque pediste que diga "Completar", la acción es eliminar, por eso te doy un color de confirmación */
+        .action-complete-button {
+            padding: 8px 12px;
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+        .action-complete-button:hover {
+            background-color: #45a049;
+        }
+        .action-complete-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    
+    <header class="site-nav">
+        <div style="font-size: 1.2em; font-weight: bold;">AppTareas | Listado</div>
+        <nav class="nav-links">
+            <a href="../index.html">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <h1>Listado Consolidado de Tareas</h1>
+        <p class="optional">Muestra tareas creadas desde el gestor ISO (local) y tareas creadas desde la página principal (obtenidas de la base de datos).</p>
+
+        <section class="card">
+            <h2>Tareas Registradas por Origen</h2>
+            <div id="taskListContainer">
+                <p>Cargando tareas...</p>
+            </div>
+        </section>
+        
+    </div>
+    
+    <footer>
+        &copy; 2025 AppTareas. Todos los derechos reservados.
+    </footer>
+
+    <script src="../security.js"></script>
+    <script>
+        // 🚀 FUNCIÓN PARA EL BOTÓN (AHORA ELIMINA) 🚀
+        async function toggleTaskCompletion(taskId) {
+            if (!taskId || taskId === 'undefined') {
+                console.error("Error: Task ID es nulo o indefinido.");
+                alert("No se pudo identificar la tarea.");
+                return;
+            }
+
+            const taskElement = document.querySelector(`.task-item[data-task-id="${taskId}"]`);
+            const button = taskElement ? taskElement.querySelector('.action-complete-button') : null;
+            
+            // 1. Feedback visual inmediato
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Borrando...';
+            }
+
+            try {
+                // 2. 🔑 CLAVE: Usamos método DELETE y la URL corregida a /tareas/:id
+                const response = await fetch(`/tareas/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    // Si el servidor responde 404 es posible que ya haya sido eliminada o ID incorrecto
+                    if (response.status !== 404) { 
+                         throw new Error(`Error ${response.status} en el servidor.`);
+                    }
+                }
+
+                // 3. Eliminación exitosa: Quitamos el elemento del DOM
+                if (taskElement) {
+                    taskElement.remove();
+                    console.log(`Tarea ${taskId} eliminada y removida del DOM.`);
+                }
+                
+            } catch (error) {
+                console.error('Fallo al eliminar la tarea:', error);
+                alert('Hubo un error de conexión o de servidor. Intenta de nuevo.');
+
+                // 4. Revertir el estado del botón en caso de fallo
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Completar'; 
+                }
+            }
+        }
+        // ---------------------------------
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const container = document.getElementById('taskListContainer');
+            const SESSION_KEY = 'isAuthenticated';
+
+            if (!container) {
+                console.error("Error Fatal: El elemento con ID 'taskListContainer' no se encontró. Verificar el HTML.");
+                return; 
+            }
+
+            if (typeof security_getAllConsolidatedTasks === 'undefined') {
+                container.innerHTML = '<p style="color:red">Error: La función de consolidación de tareas no está disponible. Asegúrate de que security.js esté actualizado.</p>';
+                return;
+            }
+
+            if (localStorage.getItem(SESSION_KEY) !== 'true') {
+                container.innerHTML = '<p class="optional" style="color:#d46a1c; font-weight:bold;">Acceso Denegado: Debes iniciar sesión primero en la página de <a href="../index.html">Inicio</a> para ver las tareas del servidor.</p>';
+                return; 
+            }
+            
+            container.innerHTML = '<p class="optional">Cargando tareas desde el servidor...</p>';
+            
+            const tasks = await window.security_getAllConsolidatedTasks(); 
+            container.innerHTML = ''; 
+
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = '<p class="optional">No tienes tareas registradas todavía o hubo un problema de sesión/conexión.</p>';
+                return;
+            }
+
+            tasks.forEach(t => {
+                const taskId = t._id || t.id; // Soporte para Mongoose (_id) o ID normalizado
+                
+                if (!taskId) {
+                    console.warn("Tarea omitida por falta de ID:", t);
+                    return; 
+                }
+                
+                const isDone = t.status === 'done';
+                const statusText = isDone ? 'COMPLETADA' : 'PENDIENTE';
+                const statusClass = isDone ? 'status-done' : 'status-pending';
+                const typeClass = t.type || 'general';
+
+                const item = document.createElement('div');
+                item.dataset.taskId = taskId; 
+                item.className = `task-item ${isDone ? 'done' : ''} ${typeClass}`;
+                
+                const isoInfo = t.type === 'iso' ? `<p style="font-size: 0.8em;">Fase ISO: ${t.phase || 'N/A'}</p>` : '';
+                
+                const formattedDate = t.due ? `Vencimiento: ${t.due}` : `Creado: ${new Date(t.ts || t.fechaCreacion).toLocaleDateString()}`;
+
+                // 🔑 Botón solo visible si NO es una tarea ISO
+                const buttonHTML = (t.source !== 'ISO (Local)') ? 
+                    `<button
+                        class="action-complete-button"
+                        onclick="toggleTaskCompletion('${taskId}')"
+                    >
+                        Completar
+                    </button>`
+                    : '';
+                
+                item.innerHTML = `
+                    <div class="task-details">
+                        <h3>${window.security_escapeHTML(t.title)}</h3>
+                        <p>${window.security_escapeHTML(t.desc || 'Sin descripción')}</p>
+                        ${isoInfo}
+                        <div class="task-source">Origen: ${t.source || 'DB'} (${formattedDate})</div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                        <div id="status-display-${taskId}" class="task-status ${statusClass}">
+                            ${statusText}
+                        </div>
+                        ${buttonHTML}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>

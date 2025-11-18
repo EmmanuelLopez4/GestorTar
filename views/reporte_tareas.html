@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Reporte de Tareas</title>
+    
+    <link rel="stylesheet" href="../styles.css">
+    
+    <style>
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .report-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+        .report-value {
+            font-size: 3em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        .status-completed { color: #4CAF50; } /* Verde */
+        .status-pending { color: #d46a1c; } /* Naranja */
+    </style>
+</head>
+<body>
+    
+    <header class="site-nav">
+        <div style="font-size: 1.2em; font-weight: bold;">AppTareas | Reportes</div>
+        <nav class="nav-links">
+            <a href="../index.html">← Volver al Inicio</a>
+            <a href="listado_tareas.html">Listado de Tareas</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <h1>📊 Panel de Reportes Mensuales</h1>
+        <p class="optional">Filtra las tareas por mes y año para ver el estado de cumplimiento.</p>
+
+        <section class="card" id="filter-card">
+            <h2>Filtro de Periodo</h2>
+            <form id="report-form" style="display: flex; gap: 15px; align-items: flex-end;">
+                <div>
+                    <label for="select-month">Mes</label>
+                    <select id="select-month" required>
+                        </select>
+                </div>
+                <div>
+                    <label for="select-year">Año</label>
+                    <select id="select-year" required>
+                        </select>
+                </div>
+                <button type="submit">Generar Reporte</button>
+            </form>
+            <div id="report-message" style="margin-top: 15px; font-weight: bold;"></div>
+        </section>
+
+        <section class="card" style="margin-top: 20px;">
+            <h2>Resumen del Reporte</h2>
+            <div class="report-grid">
+                <div class="report-card">
+                    <h3>Tareas Totales</h3>
+                    <div id="total-tasks" class="report-value">0</div>
+                </div>
+                <div class="report-card">
+                    <h3>Completadas</h3>
+                    <div id="completed-tasks" class="report-value status-completed">0</div>
+                </div>
+                <div class="report-card">
+                    <h3>Pendientes</h3>
+                    <div id="pending-tasks" class="report-value status-pending">0</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="card" style="margin-top: 20px;">
+            <h2>Detalle de Tareas Filtradas</h2>
+            <div id="task-detail-list">
+                <p class="optional">Selecciona un periodo para cargar el detalle de las tareas.</p>
+            </div>
+        </section>
+        
+    </div>
+    
+    <footer>
+        &copy; 2025 AppTareas. Todos los derechos reservados.
+    </footer>
+
+    <script src="../security.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportForm = document.getElementById('report-form');
+            const selectMonth = document.getElementById('select-month');
+            const selectYear = document.getElementById('select-year');
+            const reportMessage = document.getElementById('report-message');
+            const taskDetailList = document.getElementById('task-detail-list');
+            
+            // Nombres de los meses para el SELECT
+            const monthNames = [
+                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+            ];
+            
+            // Llenar SELECTs de Mes y Año
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            
+            // Meses
+            monthNames.forEach((name, index) => {
+                const option = document.createElement('option');
+                // El valor debe ser el número del mes (1-12)
+                option.value = index + 1; 
+                option.textContent = name;
+                selectMonth.appendChild(option);
+            });
+            selectMonth.value = today.getMonth() + 1; // Seleccionar el mes actual
+
+            // Años (últimos 3 años y el siguiente)
+            for (let i = currentYear - 2; i <= currentYear + 1; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                selectYear.appendChild(option);
+            }
+            selectYear.value = currentYear; // Seleccionar el año actual
+
+            // Lógica para el envío del formulario
+            reportForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (typeof security_fetchReportData === 'undefined') {
+                    reportMessage.textContent = "Error: La librería de seguridad no está disponible.";
+                    return;
+                }
+                
+                const mes = selectMonth.value;
+                const anio = selectYear.value;
+                const mesTexto = monthNames[parseInt(mes) - 1];
+
+                reportMessage.textContent = `Cargando reporte para ${mesTexto} de ${anio}...`;
+                
+                // 1. Obtener los datos filtrados del servidor
+                const tasks = await window.security_fetchReportData(mes, anio);
+
+                if (!tasks) {
+                    reportMessage.textContent = "Error al conectar con el servidor para obtener el reporte.";
+                    return;
+                }
+
+                if (tasks.length === 0) {
+                    reportMessage.textContent = `No se encontraron tareas creadas o vencidas en ${mesTexto} de ${anio}.`;
+                } else {
+                    reportMessage.textContent = `Reporte cargado: ${tasks.length} tareas encontradas.`;
+                }
+                
+                // 2. Procesar y renderizar el reporte
+                renderReport(tasks);
+            });
+
+            function renderReport(tasks) {
+                // Contadores
+                const total = tasks.length;
+                const completed = tasks.filter(t => t.status === 'done').length;
+                const pending = total - completed;
+
+                // Actualizar tarjetas de resumen
+                document.getElementById('total-tasks').textContent = total;
+                document.getElementById('completed-tasks').textContent = completed;
+                document.getElementById('pending-tasks').textContent = pending;
+
+                // Actualizar detalle de tareas
+                taskDetailList.innerHTML = '';
+                
+                if (total === 0) {
+                    taskDetailList.innerHTML = '<p class="optional">No hay detalles que mostrar para este periodo.</p>';
+                    return;
+                }
+
+                tasks.forEach(t => {
+                    const statusClass = t.status === 'done' ? 'status-completed' : 'status-pending';
+                    const statusText = t.status === 'done' ? 'COMPLETADA' : 'PENDIENTE';
+
+                    const item = document.createElement('div');
+                    item.className = 'task-item general'; // Reutilizamos el estilo task-item
+
+                    const dateDisplay = t.due 
+                        ? `Vencimiento: ${new Date(t.due).toLocaleDateString()}`
+                        : `Creada: ${new Date(t.fechaCreacion).toLocaleDateString()}`;
+
+                    item.innerHTML = `
+                        <div class="task-details">
+                            <h3>${window.security_escapeHTML(t.title)}</h3>
+                            <p>${window.security_escapeHTML(t.desc || 'Sin descripción')}</p>
+                            <div class="task-source">${dateDisplay}</div>
+                        </div>
+                        <div class="task-status ${statusClass}" style="margin-left: 10px;">
+                            ${statusText}
+                        </div>
+                    `;
+                    taskDetailList.appendChild(item);
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

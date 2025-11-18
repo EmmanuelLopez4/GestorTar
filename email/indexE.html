@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Email Marketing - Suscripción</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .card { 
+            background: #fff; 
+            padding:12px; 
+            border-radius:8px; 
+            box-shadow:0 1px 3px rgba(0,0,0,0.08); 
+            margin-bottom:12px; 
+        }
+        input { 
+            width:100%; 
+            box-sizing:border-box; 
+            padding:8px; 
+            margin-top:4px; 
+            border-radius:4px; 
+            border:1px solid #ddd; 
+        }
+        button { 
+            margin-top:10px; 
+            padding:8px 12px; 
+            border-radius:6px; 
+            border:none; 
+            background:#2b6cb0; 
+            color:#fff; 
+            cursor:pointer; 
+            transition: background 0.2s; 
+        }
+        button:hover { 
+            background: #1c5897; 
+        }
+    </style>
+</head>
+
+<body>
+    <header class="email-header">
+        <div class="container">
+            <h1>Suscríbete a nuestras novedades</h1>
+            <p>Recibe consejos exclusivos sobre productividad, organización y herramientas digitales directo en tu correo.</p>
+            <nav>
+                <a href="../index.html">← Volver a la App</a> | 
+                <a href="../blog/indexB.html">Ir al Blog</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Déjanos tu correo</h2>
+
+            <div class="subscribe-form">
+                <label for="email-input">Correo electrónico:</label>
+                <input type="email" id="email-input" placeholder="ejemplo@correo.com" required>
+                <button type="button" id="btn-subscribe">Suscribirme</button>
+            </div>
+
+            <div id="email-msg" style="margin-top:8px;"></div>
+        </section>
+    </main>
+
+    <footer class="email-footer">
+        <p>© 2025 - Estrategia de Email Marketing</p>
+    </footer>
+
+    <script src="../app.js"></script>
+</body>
+</html>

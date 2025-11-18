@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- SEO básico -->
+  <title>Gestor de Tareas Online – Próximos Eventos y Redes Sociales</title>
+  <meta name="description" content="Consulta los próximos eventos de nuestro gestor de tareas online y síguenos en nuestras redes sociales para novedades y tips de productividad.">
+  <meta name="keywords" content="gestor de tareas, eventos, productividad, redes sociales, app de tareas online">
+  <meta name="author" content="Tu Nombre o Equipo">
+
+  <!-- usar el mismo estilo general -->
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Ajustes extra solo para esta página */
+    .events, .socials {
+      margin-top: 20px;
+    }
+    .event {
+      background: white;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .event h3 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--accent);
+    }
+    .event small {
+      color: #555;
+    }
+
+    .socials {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .socials a {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .socials a.facebook { background: #1877f2; }
+    .socials a.facebook:hover { background: #0d5ec7; }
+    .socials a.instagram { background: #e1306c; }
+    .socials a.instagram:hover { background: #b82154; }
+    .socials a.tiktok { background: #000000; }
+    .socials a.tiktok:hover { background: #222; }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Gestor de Tareas Online</h1>
+      <p class="optional">Consulta nuestros próximos eventos y redes sociales</p>
+      <nav class="top-nav">
+        <a href="../index.html">← Volver a la App</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Próximos Eventos -->
+    <section class="card events">
+      <h2>Próximos Eventos</h2>
+      <div class="event">
+        <h3>10 de octubre – Webinar: Cómo organizar tus tareas</h3>
+        <small>Un webinar interactivo con tips y prácticas para mejorar tu organización diaria.</small>
+      </div>
+      <div class="event">
+        <h3>15 de octubre – Presentación en la UTSJR</h3>
+        <small>Presentación oficial del proyecto frente a estudiantes y profesores de la UTSJR.</small>
+      </div>
+    </section>
+
+    <!-- Redes Sociales -->
+    <section class="card socials">
+      <h2>Síguenos en Redes Sociales</h2>
+      <a href="https://web.facebook.com/profile.php?id=61581764098591" target="_blank" class="facebook">Facebook</a>
+      <a href="https://instagram.com" target="_blank" class="instagram">Instagram</a>
+      <a href="https://tiktok.com" target="_blank" class="tiktok">TikTok</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 - Gestor de Tareas Online</p>
+  </footer>
+</body>
+</html>

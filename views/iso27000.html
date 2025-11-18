@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ISO 27000 — AppTareas</title>
+    <!-- RUTA CORREGIDA -->
+    <link rel="stylesheet" href="../styles.css" />
+    <meta name="referrer" content="no-referrer" />
+</head>
+<body>
+    
+    <!-- CABECERA ESTILIZADA -->
+    <header class="site-nav">
+        <div style="font-size: 1.2em; font-weight: bold;">ISO/IEC 27000</div>
+        <nav class="nav-links">
+            <a href="../index.html">Inicio</a>
+            <a href="info.html">Documentos</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        
+        <h1>Implementación de ISO/IEC 27000</h1>
+        
+        <section class="intro card">
+            <h2 class="document-content">Ciclo de Tareas de Seguridad</h2>
+            <p>Esta sección conecta las fases del ciclo ISO 27000 con tareas concretas dentro del gestor. Usa el formulario para crear tareas asociadas a cada fase; el sistema validará, sanitizará y registrará cada acción en el log de auditoría.</p>
+            <!-- RUTA CORREGIDA Y ESTILO INLINE ELIMINADO para que el CSS externo aplique el max-width: 250px -->
+            <img src="../img/ciclo_iso27000.png" alt="Ciclo ISO 27000" class="iso-image" />
+        </section>
+
+        <section class="card" style="margin-top:18px">
+            <h3 class="document-content">Crear tarea vinculada a una fase ISO</h3>
+            <form id="isoTaskForm">
+                <label>Título</label>
+                <input id="isoTitle" placeholder="Título de la tarea" required />
+                <label>Descripción</label>
+                <textarea id="isoDesc" rows="3" placeholder="Descripción (opcional)"></textarea>
+
+                <label>Fase ISO</label>
+                <select id="isoPhase" required>
+                    <option value="">-- Selecciona fase --</option>
+                    <option value="01">01. Alcance y planeación</option>
+                    <option value="02">02. Documentación y herramientas</option>
+                    <option value="03">03. Capacitación e implementación</option>
+                    <option value="04">04. Auditoría interna y revisión</option>
+                    <option value="05">05. Auditoría de certificación</option>
+                </select>
+
+                <label>Plazo (fecha)</label>
+                <input id="isoDue" type="date" />
+
+                <button id="isoCreateBtn" type="submit">Crear tarea ISO</button>
+                <small class="optional">Las entradas serán validadas y registradas para auditoría.</small>
+            </form>
+        </section>
+
+        <section class="card" style="margin-top:18px">
+            <h3 class="document-content">Tareas por fase</h3>
+            <div id="isoTasksContainer" class="phases" style="display:flex; flex-wrap:wrap; gap:18px; justify-content:flex-start;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Gestor de Tareas — Implementación basada en ISO/IEC 27000</p>
+    </footer>
+
+    <!-- RUTA CORREGIDA -->
+    <script src="../security.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            (function(){
+                const container = document.getElementById('isoTasksContainer');
+                
+                if (typeof security_getAllTasks === 'undefined' || typeof security_createTask === 'undefined') {
+                    console.error("security.js no se cargó correctamente.");
+                    container.innerHTML = '<p style="color:red">Error: No se pudo cargar la funcionalidad de seguridad/tareas.</p>';
+                    return;
+                }
+
+                function renderTasks() {
+                    container.innerHTML = '';
+                    const tasks = security_getAllTasks();
+                    if (!tasks || tasks.length === 0) {
+                        container.innerHTML = '<p style="color:var(--color-text-secondary)">No hay tareas ISO creadas todavía.</p>';
+                        return;
+                    }
+                    tasks.forEach(t => {
+                        const div = document.createElement('div');
+                        div.className = 'phase';
+                        let cls = 'gray';
+                        if (t.phase === '01') cls = 'green';
+                        if (t.phase === '02') cls = 'orange';
+                        if (t.phase === '03') cls = 'gray';
+                        if (t.phase === '04') cls = 'yellow';
+                        if (t.phase === '05') cls = 'blue';
+                        
+                        div.classList.add(cls);
+                        div.style.width = 'calc(33% - 12px)'; 
+                        div.style.cssText += 'padding: 15px; border-radius: 8px; color: white;';
+
+                        const isDone = t.status === 'done';
+                        if (isDone) {
+                             div.classList.add('done');
+                        }
+
+                        const buttonHTML = isDone 
+                            ? `<p style="font-size:14px; text-align:center; margin:0; font-weight:bold; color:var(--color-highlight);">✅ Completada</p>`
+                            : `<button data-id="${t.id}" style="background: rgba(255,255,255,0.2); color:white; padding:6px 8px;border-radius:8px;border:0;cursor:pointer">Marcar completada</button>`;
+
+
+                        div.innerHTML = `<h3 style="margin-top:0;">${t.phase} — ${escapeHTML(t.title)}</h3>
+                                       <p style="color:rgba(255,255,255,0.95); font-size: 14px;">${escapeHTML(t.desc || '')}</p>
+                                       <p style="font-size:12px;opacity:0.9; margin-bottom: 8px;">Plazo: ${t.due || '—'} · ID:${t.id}</p>
+                                       ${buttonHTML}`;
+                        
+                        container.appendChild(div);
+
+                        if (!isDone) {
+                            div.querySelector('button').addEventListener('click', e => {
+                                const id = e.target.getAttribute('data-id');
+                                security_markTaskDone(id);
+                                renderTasks();
+                            });
+                        }
+                    });
+                }
+
+                const isoForm = document.getElementById('isoTaskForm');
+                isoForm.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    const title = document.getElementById('isoTitle').value;
+                    const desc = document.getElementById('isoDesc').value;
+                    const phase = document.getElementById('isoPhase').value;
+                    const due = document.getElementById('isoDue').value;
+                    const res = security_createTask({ title, desc, phase, due, origin: 'iso27000.html' });
+                    if (res && res.ok) {
+                        alert('Tarea ISO creada y registrada en auditoría.');
+                        isoForm.reset();
+                        renderTasks();
+                    } else {
+                        alert('Error: ' + (res && res.error ? res.error : 'entrada inválida'));
+                    }
+                });
+
+                function escapeHTML(s){ return window.security_escapeHTML ? window.security_escapeHTML(s) : (''+s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+                renderTasks();
+            })();
+        });
+    </script>
+</body>
+</html>

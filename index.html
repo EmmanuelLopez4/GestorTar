@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AppTareas</title>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <header class="site-nav">
+    <div style="font-size: 1.2em; font-weight: bold;">AppTareas</div>
+    <nav class="nav-links">
+
+        <a href="index.html">Inicio</a>
+        <a href="blog/indexB.html">Blog</a>
+        <a href="views/info.html">Información</a>
+        <a href="email/indexE.html">Contacto/Email</a>
+        <a href="views/redes.html">Redes</a>
+        <a href="views/reporte_tareas.html">Reportes</a>
+        <a href="views/listado_tareas.html">Mis Tareas</a>
+        <a href="#" id="btn-logout">Cerrar Sesión</a>
+    </nav>
+</header>
+
+    <div class="container">
+
+        <h1>AppTareas — Gestión</h1>
+
+        <div class="task-app">
+            
+            <div class="tasks">
+                <!-- Tarjeta de Login (se oculta con app.js si hay sesión) -->
+                <div class="card" id="login-card">
+                    <h2>Iniciar sesión</h2>
+                    <p class="optional">Inicia sesión para acceder a la gestión de tareas.</p>
+
+                    <form>
+                        <label for="login-username">Usuario</label>
+                        <input id="login-username" type="text" placeholder="usuario" value="david" />
+
+                        <label for="login-password">Contraseña</label>
+                        <input id="login-password" type="password" placeholder="contraseña" value="1234" />
+
+                        <button id="btn-login" type="button">Iniciar sesión</button>
+                    </form>
+                    <div id="login-msg" style="margin-top:8px;color:var(--color-accent);"></div>
+                </div>
+                
+                <!-- El bloque de 'Redes Sociales' ha sido eliminado de aquí -->
+
+                <div id="task-list">
+                    <!-- Las tareas se mostrarán aquí si el usuario está logueado -->
+                </div>
+            </div>
+
+            <!-- Columna de Creación de Tareas (se deshabilita sin login) -->
+            <div class="card" id="task-card">
+                <h2>Crear tarea</h2>
+                <small class="optional" id="task-card-status">Requiere iniciar sesión</small>
+
+                <form id="create-task-form">
+                    <label for="task-title">Título</label>
+                    <input id="task-title" placeholder="Título de la tarea" />
+
+                    <label for="task-desc">Descripción</label>
+                    <textarea id="task-desc" rows="3" placeholder="Descripción"></textarea>
+
+                    <label for="task-due">Fecha vencimiento (YYYY-MM-DD)</label>
+                    <input id="task-due" placeholder="2025-12-31" />
+
+                    <button id="btn-create-task" type="submit">Crear tarea</button>
+                </form>
+                <div id="task-msg" style="margin-top:8px;color:var(--color-accent);"></div>
+            </div>
+
+        </div>
+        
+        <!-- Panel de Auditoría -->
+        <div class="card">
+            <h2>Panel de auditoría</h2>
+            <button id="btn-show-audit">Mostrar logs de auditoría (console)</button>
+            <button id="btn-clear-audit">Limpiar logs</button>
+            <div style="font-size:13px;margin-top:8px;color:var(--color-text-secondary)">
+                Los logs se almacenan en localStorage (clave <code>st_audit_v1</code>).
+            </div>
+        </div>
+
+    </div>
+    
+    <footer>
+        &copy; 2025 AppTareas. Todos los derechos reservados.
+    </footer>
+
+    <!-- CARGA DE SCRIPTS -->
+    <script src="security.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
